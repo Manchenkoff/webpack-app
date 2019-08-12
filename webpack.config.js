@@ -14,7 +14,9 @@ const ImageminPlugin = require('imagemin-webpack-plugin').default;
  * @returns object
  */
 module.exports = (env, argv) => {
-    return {
+    let isProduction = (argv.mode === 'production');
+
+    let config = {
         // absolute path to the base directory
         context: path.resolve(__dirname, "src"),
 
@@ -40,9 +42,6 @@ module.exports = (env, argv) => {
 
         // plugins configurations
         plugins: [
-            // clean 'dist' directory
-            new CleanWebpackPlugin(),
-
             // save compiled SCSS into separated CSS file
             new MiniCssExtractPlugin({
                 filename: "css/style.css"
@@ -56,7 +55,7 @@ module.exports = (env, argv) => {
             // image optimization
             new ImageminPlugin({
                 // disable for dev builds
-                disable: argv.mode !== 'production',
+                disable: !isProduction,
                 test: /\.(jpe?g|png|gif)$/i,
                 pngquant: {quality: '70-85'},
                 optipng: {optimizationLevel: 9}
@@ -97,7 +96,7 @@ module.exports = (env, argv) => {
                         {
                             loader: 'image-webpack-loader',
                             options: {
-                                disable: argv.mode !== 'production',
+                                disable: !isProduction,
                                 mozjpeg: {
                                     progressive: true,
                                     quality: 65
@@ -135,4 +134,14 @@ module.exports = (env, argv) => {
             ]
         },
     };
+
+    // PRODUCTION ONLY configuration
+    if (isProduction) {
+        config.plugins.push(
+            // clean 'dist' directory
+            new CleanWebpackPlugin()
+        );
+    }
+
+    return config;
 };
