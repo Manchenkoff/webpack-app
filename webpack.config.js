@@ -2,6 +2,7 @@
 const path = require('path');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
@@ -65,8 +66,10 @@ module.exports = (env, argv) => {
         // production mode optimization
         optimization: {
             minimizer: [
-                // CSS optimizer (JS optimized by default)
+                // CSS optimizer
                 new OptimizeCSSAssetsPlugin(),
+                // JS optimizer by default
+                new TerserPlugin(),
             ],
         },
 
